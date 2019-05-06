@@ -17,14 +17,34 @@ class Driver:
         self.busyTime = 0
         # 选择下一个路段的冷却时间
         self.CDTime = timeSpend
+        # 最短规划路径
+        self.paths = []
 
     # 载客
-    def pickACustomer(self, destination, timeSpend):
-        print(destination, timeSpend)
+    def pickACustomer(self, destination, paths):
         self.pickUpCount += 1
         self.occupation = True
         self.planLocation = destination
-        self.busyTime = timeSpend
+        totalCost = 0
+        for path_index in range(len(paths)):
+            totalCost += paths[path_index]['length']
+        #print(totalCost)
+        self.busyTime = totalCost
+        self.paths = paths
+
+    # 侦测当前所在位置
+    def checkLocationNow(self):
+        #print('check')
+        totalCost = 0
+        for path_index in range(len(self.paths)):
+            totalCost += self.paths[path_index]['length']
+
+        for path_index in range(len(self.paths)):
+            totalCost -= self.paths[path_index]['length']
+            if self.busyTime > totalCost:
+                self.location = self.paths[path_index]['node']
+               # print(self.location)
+                return
  
     # 下客
     def dropACustomer(self):
@@ -51,8 +71,9 @@ class Driver:
             # 如果乘客还未到终点
             if self.busyTime > 0:
                 self.busyTime -= 1
+                self.checkLocationNow()
             # 如果乘客到达终点
-            if self.busyTime == 0:
+            if self.busyTime <= 0:
                 self.dropACustomer()
                 condition = 1
         return condition
@@ -60,6 +81,10 @@ class Driver:
     # 获取CD时间
     def getCDTime(self):
         return self.CDTime
+
+    # 获取busy时间
+    def getBusyTime(self):
+        return self.busyTime
 
     # 获取载客状态
     def getOccupation(self):
@@ -72,3 +97,5 @@ class Driver:
     # 获取目的位置
     def getPlanLocation(self):
         return self.planLocation
+    
+    

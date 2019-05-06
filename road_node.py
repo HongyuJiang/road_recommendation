@@ -7,7 +7,7 @@ import math
 # 路网中路段类
 class RoadNode:
     empCount = 0
-    def __init__(self, ID, productionRate, length):
+    def __init__(self, ID, length,region):
         # 被选为候选节点的次数
         self.selectedAsCandidateCount = 0
         # 成功在该道路载客的次数
@@ -17,11 +17,13 @@ class RoadNode:
         # 道路UCB值
         self.UCBValue = 0
         # 道路产生乘客的概率
-        self.productionRate = productionRate
-        # 道路ID
+        self.productionRate = random.random() / 100
+        # 道路ID, 方便进行索引
         self.ID = ID
         # 道路长度
         self.length = length
+        # 道路所在大道
+        self.region = region
 
     # 设置节点的UCB值
     def setUCBValue(self, globalPlanCount, exploration_ratio):
@@ -30,7 +32,7 @@ class RoadNode:
         else:
             self.UCBValue = self.hittedCount + exploration_ratio * math.sqrt(math.log(globalPlanCount) / self.selectedAsCandidateCount)
             return self.UCBValue
-
+            
     # 获取节点的UCB值
     def getUCBValue(self):
         return self.UCBValue
@@ -63,5 +65,13 @@ class RoadNode:
     # 获取道路ID
     def getID(self):
         return self.ID
+
+    # 获取所在大道
+    def getRegion(self):
+        return self.region
+
+    def getProductionRate(self):
+        return self.productionRate
+
 
     
